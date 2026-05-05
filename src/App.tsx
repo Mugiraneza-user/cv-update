@@ -33,11 +33,11 @@ interface Stat {
   label: string;
 }
 
-interface Education {
-  year: string;
-  degree: string;
-  school: string;
-}
+// interface Education {
+//   year: string;
+//   degree: string;
+//   school: string;
+// }
 
 // ========================
 // DATA
@@ -110,11 +110,11 @@ const statsData: Stat[] = [
   { value: '2027', label: 'Expected Graduation' },
 ];
 
-const educationData: Education[] = [
-  { year: '2023 – Present', degree: 'B.Sc. Information Systems', school: 'University of Rwanda' },
-  { year: '2016 – 2022', degree: 'High School Diploma', school: 'College Adventiste de Rwankeri' },
-  { year: '2009 – 2015', degree: 'Primary Education', school: 'Rwankeri Primary School' },
-];
+// const educationData: Education[] = [
+//   { year: '2023 – Present', degree: 'B.Sc. Information Systems', school: 'University of Rwanda' },
+//   { year: '2016 – 2022', degree: 'High School Diploma', school: 'College Adventiste de Rwankeri' },
+//   { year: '2009 – 2015', degree: 'Primary Education', school: 'Rwankeri Primary School' },
+// ];
 
 // ========================
 // COMPONENTS
