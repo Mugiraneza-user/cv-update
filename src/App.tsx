@@ -120,15 +120,41 @@ const statsData: Stat[] = [
 // COMPONENTS
 // ========================
 
-const Navbar: React.FC = () => (
+interface NavbarProps {
+  theme: 'dark' | 'light';
+  toggleTheme: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => (
   <nav>
     <a href="#home" className="nav-logo">Isaac Mugiraneza</a>
-    <ul className="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#skills">Skills</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
+    <div className="nav-actions">
+      <ul className="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
+        {theme === 'dark' ? (
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        )}
+      </button>
+    </div>
   </nav>
 );
 
@@ -367,7 +393,7 @@ const Contact: React.FC = () => (
 
 const Footer: React.FC = () => (
   <footer>
-    <span>All rights reserved — 2026</span>
+    <span>All rights reserved by Isaac Mugiraneza - 2026</span>
     {/* <span>
       B.Sc. Information Systems — <strong>University of Rwanda</strong>
     </span> */}
@@ -377,10 +403,10 @@ const Footer: React.FC = () => (
 // ========================
 // MAIN COMPONENT
 // ========================
-const Home: React.FC = () => {
+const Home: React.FC<{ theme: 'dark' | 'light'; toggleTheme: () => void }> = ({ theme, toggleTheme }) => {
   return (
     <>
-      <Navbar />
+      <Navbar theme={theme} toggleTheme={toggleTheme} />
       <Hero />
       <About />
       <Skills />
@@ -400,16 +426,41 @@ const GlobalStyles = () => (
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --black: #0a0a0a;
-      --dark: #1a1a1a;
-      --mid: #444;
-      --muted: #888;
-      --light: #ccc;
-      --border: #e5e5e5;
-      --bg: #ffffff;
-      --bg2: #f9f9f7;
+      /* Default dark mode values (as dark mode is default) */
+      --black: #ffffff;
+      --dark: #e2e8f0;
+      --mid: #94a3b8;
+      --muted: #8892b0;
+      --light: #2d2d30;
+      --border: #1f1f23;
+      --bg: #0b0b0f;
+      --bg2: #16161a;
+      --bg-hover: #1e1e24;
+      --nav-bg: rgba(11, 11, 15, 0.85);
+      --placeholder: #3f3f46;
+      --accent: #dfc198; /* champagne gold */
       --font-display: 'Playfair Display', serif;
       --font-body: 'DM Sans', sans-serif;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      --shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    :root.light {
+      /* Light mode values */
+      --black: #0f172a;
+      --dark: #334155;
+      --mid: #475569;
+      --muted: #64748b;
+      --light: #e2e8f0;
+      --border: #e2e8f0;
+      --bg: #ffffff;
+      --bg2: #f8fafc;
+      --bg-hover: #f1f5f9;
+      --nav-bg: rgba(255, 255, 255, 0.85);
+      --placeholder: #94a3b8;
+      --accent: #9b7e56; /* bronze/gold */
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+      --shadow-hover: 0 12px 30px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.02);
     }
 
     html { scroll-behavior: smooth; }
@@ -421,6 +472,7 @@ const GlobalStyles = () => (
       font-size: 16px;
       line-height: 1.6;
       overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
     /* NAV */
@@ -428,9 +480,10 @@ const GlobalStyles = () => (
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; justify-content: space-between; align-items: center;
       padding: 1.25rem 4rem;
-      background: rgba(255,255,255,0.92);
+      background: var(--nav-bg);
       backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--border);
+      transition: background 0.3s ease, border-color 0.3s ease;
     }
     .nav-logo {
       font-family: var(--font-display);
@@ -439,6 +492,12 @@ const GlobalStyles = () => (
       color: var(--black);
       letter-spacing: -0.01em;
       text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
     }
     .nav-links { display: flex; gap: 2.5rem; list-style: none; }
     .nav-links a {
@@ -448,12 +507,40 @@ const GlobalStyles = () => (
       text-decoration: none;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      transition: color 0.2s;
+      transition: color 0.3s ease;
     }
     .nav-links a:hover { color: var(--black); }
 
+    /* THEME TOGGLE */
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--black);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      outline: none;
+      padding: 0;
+    }
+    .theme-toggle:hover {
+      background: var(--bg2);
+      border-color: var(--mid);
+      transform: rotate(15deg) scale(1.05);
+    }
+    .theme-toggle:active {
+      transform: scale(0.95);
+    }
+    .theme-toggle svg {
+      transition: transform 0.5s ease;
+    }
+
     /* SECTIONS */
-    section { padding: 6rem 4rem; }
+    section { padding: 6rem 4rem; transition: background 0.3s ease, border-color 0.3s ease; }
     .inner { max-width: 960px; margin: 0 auto; }
 
     .label {
@@ -466,8 +553,9 @@ const GlobalStyles = () => (
       display: flex;
       align-items: center;
       gap: 0.75rem;
+      transition: color 0.3s ease;
     }
-    .label::before { content: ''; width: 24px; height: 1px; background: var(--light); }
+    .label::before { content: ''; width: 24px; height: 1px; background: var(--light); transition: background 0.3s ease; }
 
     h2 {
       font-family: var(--font-display);
@@ -477,6 +565,7 @@ const GlobalStyles = () => (
       letter-spacing: -0.03em;
       line-height: 1.1;
       margin-bottom: 1rem;
+      transition: color 0.3s ease;
     }
 
     /* HERO */
@@ -508,6 +597,7 @@ const GlobalStyles = () => (
       padding: 0.35rem 0.875rem;
       border-radius: 2px;
       margin-bottom: 1.5rem;
+      transition: border-color 0.3s ease, color 0.3s ease;
     }
     .hero-name {
       font-family: var(--font-display);
@@ -517,14 +607,21 @@ const GlobalStyles = () => (
       letter-spacing: -0.04em;
       line-height: 0.95;
       margin-bottom: 1rem;
+      transition: color 0.3s ease;
     }
-    .hero-name span { color: var(--muted); }
+    .hero-name span {
+      background: linear-gradient(135deg, var(--black) 30%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
     .hero-role {
       font-size: 1rem;
       font-weight: 400;
       color: var(--mid);
       margin-bottom: 1.5rem;
       line-height: 1.6;
+      transition: color 0.3s ease;
     }
     .hero-desc {
       font-size: 0.9rem;
@@ -532,6 +629,7 @@ const GlobalStyles = () => (
       line-height: 1.9;
       margin-bottom: 2.5rem;
       max-width: 420px;
+      transition: color 0.3s ease;
     }
     .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
 
@@ -544,22 +642,33 @@ const GlobalStyles = () => (
       letter-spacing: 0.06em;
       text-transform: uppercase;
       text-decoration: none;
-      border-radius: 2px;
-      transition: all 0.2s;
+      border-radius: 4px;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
       cursor: pointer;
       border: none;
+      box-shadow: var(--shadow);
     }
     .btn-dark {
       background: var(--black);
-      color: #fff;
+      color: var(--bg);
     }
-    .btn-dark:hover { background: var(--dark); }
+    .btn-dark:hover {
+      background: var(--accent);
+      color: var(--black);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
     .btn-outline {
       background: transparent;
       color: var(--dark);
       border: 1px solid var(--border);
     }
-    .btn-outline:hover { border-color: var(--mid); }
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
 
     .hero-stats {
       display: flex;
@@ -569,6 +678,7 @@ const GlobalStyles = () => (
     .stat-block {
       padding-left: 1.5rem;
       border-left: 2px solid var(--border);
+      transition: border-color 0.3s ease;
     }
     .stat-num {
       font-family: var(--font-display);
@@ -577,6 +687,7 @@ const GlobalStyles = () => (
       color: var(--black);
       letter-spacing: -0.04em;
       line-height: 1;
+      transition: color 0.3s ease;
     }
     .stat-label {
       font-size: 0.78rem;
@@ -584,6 +695,7 @@ const GlobalStyles = () => (
       letter-spacing: 0.06em;
       text-transform: uppercase;
       margin-top: 0.25rem;
+      transition: color 0.3s ease;
     }
 
     /* ABOUT */
@@ -600,56 +712,89 @@ const GlobalStyles = () => (
       color: var(--dark);
       line-height: 1.9;
       margin-bottom: 1rem;
+      transition: color 0.3s ease;
     }
-    .about-text p strong { color: var(--black); font-weight: 500; }
+    .about-text p strong { color: var(--black); font-weight: 500; transition: color 0.3s ease; }
     .edu-list { margin-top: 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
-    .edu-item { border-left: 2px solid var(--border); padding-left: 1.25rem; }
-    .edu-year { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.2rem; }
-    .edu-degree { font-weight: 500; font-size: 0.9rem; color: var(--black); margin-bottom: 0.1rem; }
-    .edu-school { font-size: 0.8rem; color: var(--muted); }
+    .edu-item { border-left: 2px solid var(--border); padding-left: 1.25rem; transition: border-color 0.3s ease; }
+    .edu-year { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.2rem; transition: color 0.3s ease; }
+    .edu-degree { font-weight: 500; font-size: 0.9rem; color: var(--black); margin-bottom: 0.1rem; transition: color 0.3s ease; }
+    .edu-school { font-size: 0.8rem; color: var(--muted); transition: color 0.3s ease; }
 
     /* SKILLS */
     .skills-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1px;
-      border: 1px solid var(--border);
+      gap: 1.25rem;
       margin-top: 3rem;
-      background: var(--border);
+      transition: border-color 0.3s ease, background-color 0.3s ease;
     }
     .skill-card {
       background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
       padding: 1.5rem;
-      transition: background 0.2s;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     }
-    .skill-card:hover { background: var(--bg2); }
+    .skill-card:hover {
+      background: var(--bg2);
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--accent);
+    }
     .skill-name {
       font-size: 0.88rem;
       font-weight: 500;
       color: var(--black);
       margin-bottom: 0.5rem;
+      transition: color 0.3s ease;
     }
-    .skill-bar { height: 1px; background: var(--border); margin-top: 0.75rem; }
-    .skill-fill { height: 1px; background: var(--dark); transition: width 1s ease; width: 0; }
+    .skill-bar {
+      height: 3px;
+      background: var(--border);
+      margin-top: 0.75rem;
+      border-radius: 2px;
+      overflow: hidden;
+      transition: background 0.3s ease;
+    }
+    .skill-fill {
+      height: 3px;
+      background: linear-gradient(to right, var(--accent), var(--black));
+      transition: width 1.2s cubic-bezier(0.1, 0.8, 0.1, 1), background 0.3s ease;
+      width: 0;
+      border-radius: 2px;
+    }
     .skill-meta { display: flex; justify-content: space-between; align-items: center; }
-    .skill-cat { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+    .skill-cat { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.3s ease; }
 
     /* PROJECTS */
     .projects-section { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .projects-list { display: flex; flex-direction: column; gap: 0; margin-top: 3rem; border: 1px solid var(--border); }
+    .projects-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
     .project-item {
       display: grid;
       grid-template-columns: auto 1fr auto;
       gap: 2rem;
       align-items: start;
-      padding: 2rem;
-      border-bottom: 1px solid var(--border);
+      padding: 2.25rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
       background: var(--bg);
-      transition: background 0.2s;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
       cursor: default;
     }
-    .project-item:last-child { border-bottom: none; }
-    .project-item:hover { background: #fafaf8; }
+    .project-item:hover {
+      background: var(--bg-hover);
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--accent);
+    }
     .project-num {
       font-family: var(--font-display);
       font-size: 2rem;
@@ -657,8 +802,9 @@ const GlobalStyles = () => (
       color: var(--border);
       line-height: 1;
       min-width: 2.5rem;
+      transition: color 0.3s ease;
     }
-    .project-period { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.4rem; }
+    .project-period { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.4rem; transition: color 0.3s ease; }
     .project-title {
       font-family: var(--font-display);
       font-size: 1.3rem;
@@ -666,8 +812,9 @@ const GlobalStyles = () => (
       color: var(--black);
       margin-bottom: 0.6rem;
       letter-spacing: -0.02em;
+      transition: color 0.3s ease;
     }
-    .project-desc { font-size: 0.85rem; color: var(--mid); line-height: 1.8; margin-bottom: 1rem; }
+    .project-desc { font-size: 0.85rem; color: var(--mid); line-height: 1.8; margin-bottom: 1rem; transition: color 0.3s ease; }
     .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
     .tag {
       font-size: 0.68rem;
@@ -676,15 +823,16 @@ const GlobalStyles = () => (
       color: var(--muted);
       letter-spacing: 0.05em;
       text-transform: uppercase;
-      border-radius: 1px;
+      border-radius: 2px;
+      transition: border-color 0.3s ease, color 0.3s ease;
     }
     .project-arrow {
       font-size: 1.25rem;
       color: var(--light);
-      transition: color 0.2s, transform 0.2s;
+      transition: color 0.3s ease, transform 0.2s;
       align-self: center;
     }
-    .project-item:hover .project-arrow { color: var(--dark); transform: translateX(3px); }
+    .project-item:hover .project-arrow { color: var(--accent); transform: translateX(5px); }
 
     /* CERTIFICATIONS */
     .certs-grid {
@@ -695,12 +843,17 @@ const GlobalStyles = () => (
     }
     .cert-card {
       border: 1px solid var(--border);
-      padding: 1.5rem;
-      border-radius: 2px;
+      padding: 1.75rem;
+      border-radius: 8px;
       background: var(--bg);
-      transition: border-color 0.2s;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     }
-    .cert-card:hover { border-color: var(--mid); }
+    .cert-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
     .cert-icon {
       width: 36px; height: 36px;
       border: 1px solid var(--border);
@@ -709,11 +862,12 @@ const GlobalStyles = () => (
       font-weight: 500;
       color: var(--muted);
       margin-bottom: 1rem;
-      border-radius: 2px;
+      border-radius: 4px;
       letter-spacing: 0.04em;
+      transition: border-color 0.3s ease, color 0.3s ease;
     }
-    .cert-title { font-weight: 500; font-size: 0.9rem; color: var(--black); margin-bottom: 0.25rem; }
-    .cert-issuer { font-size: 0.78rem; color: var(--muted); }
+    .cert-title { font-weight: 500; font-size: 0.9rem; color: var(--black); margin-bottom: 0.25rem; transition: color 0.3s ease; }
+    .cert-issuer { font-size: 0.78rem; color: var(--muted); transition: color 0.3s ease; }
 
     /* CONTACT */
     .contact-grid {
@@ -722,8 +876,8 @@ const GlobalStyles = () => (
       gap: 5rem;
       align-items: start;
     }
-    .contact-info p { font-size: 0.9rem; color: var(--mid); line-height: 1.9; margin-bottom: 2rem; }
-    .contact-details { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); }
+    .contact-info p { font-size: 0.9rem; color: var(--mid); line-height: 1.9; margin-bottom: 2rem; transition: color 0.3s ease; }
+    .contact-details { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); transition: border-color 0.3s ease; }
     .contact-row {
       display: flex;
       align-items: center;
@@ -731,15 +885,16 @@ const GlobalStyles = () => (
       padding: 1rem 1.25rem;
       border-bottom: 1px solid var(--border);
       font-size: 0.85rem;
+      transition: border-color 0.3s ease;
     }
     .contact-row:last-child { border-bottom: none; }
-    .contact-row-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); min-width: 60px; }
-    .contact-row a { color: var(--dark); text-decoration: none; transition: color 0.2s; }
+    .contact-row-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); min-width: 60px; transition: color 0.3s ease; }
+    .contact-row a { color: var(--dark); text-decoration: none; transition: color 0.3s ease; }
     .contact-row a:hover { color: var(--black); }
 
     .contact-form { display: flex; flex-direction: column; gap: 1.25rem; }
     .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-    .form-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    .form-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); transition: color 0.3s ease; }
     .form-input {
       background: var(--bg2);
       border: 1px solid var(--border);
@@ -747,13 +902,13 @@ const GlobalStyles = () => (
       font-family: var(--font-body);
       font-size: 0.88rem;
       color: var(--dark);
-      border-radius: 1px;
+      border-radius: 4px;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
       width: 100%;
     }
-    .form-input:focus { border-color: var(--mid); }
-    .form-input::placeholder { color: var(--light); }
+    .form-input:focus { border-color: var(--accent); background: var(--bg); }
+    .form-input::placeholder { color: var(--placeholder); transition: color 0.3s ease; }
     textarea.form-input { resize: vertical; min-height: 110px; }
 
     /* FOOTER */
@@ -765,8 +920,9 @@ const GlobalStyles = () => (
       align-items: center;
       font-size: 0.78rem;
       color: var(--muted);
+      transition: border-color 0.3s ease, color 0.3s ease;
     }
-    footer strong { color: var(--dark); font-weight: 500; }
+    footer strong { color: var(--dark); font-weight: 500; transition: color 0.3s ease; }
 
     /* LANGUAGES */
     .langs-row {
@@ -774,17 +930,25 @@ const GlobalStyles = () => (
       gap: 1.5rem;
       flex-wrap: wrap;
       margin-top: 3rem;
-      border: 1px solid var(--border);
+      transition: border-color 0.3s ease;
     }
     .lang-card {
       flex: 1;
-      min-width: 140px;
-      padding: 1.5rem;
-      border-right: 1px solid var(--border);
+      min-width: 180px;
+      padding: 1.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      box-shadow: var(--shadow);
+      transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     }
-    .lang-card:last-child { border-right: none; }
-    .lang-name { font-weight: 500; color: var(--black); font-size: 0.95rem; margin-bottom: 0.2rem; }
-    .lang-level { font-size: 0.75rem; color: var(--muted); }
+    .lang-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+    .lang-name { font-weight: 500; color: var(--black); font-size: 0.95rem; margin-bottom: 0.2rem; transition: color 0.3s ease; }
+    .lang-level { font-size: 0.75rem; color: var(--muted); transition: color 0.3s ease; }
 
     /* RESPONSIVE */
     @media (max-width: 768px) {
@@ -819,10 +983,29 @@ const GlobalStyles = () => (
 // EXPORT
 // ========================
 export default function App() {
+  const [theme, setTheme] = React.useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('theme');
+    return (saved === 'light' || saved === 'dark') ? saved : 'dark';
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'light') {
+      root.classList.add('light');
+    } else {
+      root.classList.remove('light');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
   return (
     <>
       <GlobalStyles />
-      <Home />
+      <Home theme={theme} toggleTheme={toggleTheme} />
     </>
   );
 }
